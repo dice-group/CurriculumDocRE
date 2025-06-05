@@ -9,7 +9,6 @@ import logging
 from tqdm import tqdm
 from transformers import BertTokenizerFast
 import numpy as np
-
 import src.config as config
 import src.utils as utils
 from src.model import EnhancedCurriculumDocREModel
