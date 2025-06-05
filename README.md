@@ -65,6 +65,9 @@ Install with: `pip install -r requirements.txt`
   - `test.json`: Test data
   - `rel_info.json`: Relation type information
 
+### Before running the code:
+1. Download the data from the following [link](https://drive.google.com/drive/folders/1c5-0YwnoJx8NS6CV2f-NoTHR__BdkNqw)
+2. Save it in the `data` folder.
 ## Running the Code
 
 ### Training
