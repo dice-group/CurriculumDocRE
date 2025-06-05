@@ -1,4 +1,4 @@
-# CurriculumDocRE: A Curriculum Learning Approach for Document-Level Relation Extraction
+# CurriculumDocRE: A Curriculum Learning Approach for DocRE
 
 This repository contains an implementation of the CurriculumDocRE approach for document-level relation extraction with curriculum learning. The code has been structured to be memory-efficient and properly integrates all components of the curriculum learning approach.
 
