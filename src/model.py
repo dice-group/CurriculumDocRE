@@ -22,7 +22,6 @@ class EntityAwareAttention(nn.Module):
     def forward(self, hidden_states, entity_positions, attention_mask=None):
         """
         Apply entity-aware attention.
-        
         Args:
             hidden_states: Tensor of shape [batch_size, seq_len, hidden_size]
             entity_positions: List of entity mention positions
