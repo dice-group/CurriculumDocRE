@@ -6,7 +6,7 @@ This repository contains an implementation of the CurriculumDocRE approach for d
 The CurriculumDocRE approach implements a curriculum learning strategy for document-level relation extraction, where the model progressively learns from:
 1. Simple relations (entities in same/adjacent sentences)
 2. Multi-hop relations (entities in different sentences requiring connecting information)
-3. Complex relations (entities across paragraphs requiring advanced coreference)
+3. Complex relations (entities across paragraphs requiring advanced coreference) -- More explaination requires
 
 ## Key Features
 
