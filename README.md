@@ -42,7 +42,7 @@ CurriculumDocRE/
 
 1. Download the required datasets:
    - **Re‑DocRED**: [https://github.com/tonytan48/Re-DocRED](https://github.com/tonytan48/Re-DocRED)
-   - **RE2‑DocRED**: [https://github.com/.../RE2-DocRED](https://github.com/.../RE2-DocRED)
+   - **RE2‑DocRED**: [https://github.com/.../RE2-DocRED](https://github.com/klassessg/re2-docred)
    - **CDR**: [BioCreative V CDR task](https://biocreative.sourceforge.net/resources/cdr.html)
    - **GDA**: [DFKI-SLT/GDA on Hugging Face](https://huggingface.co/DFKI-SLT/GDA)
 
