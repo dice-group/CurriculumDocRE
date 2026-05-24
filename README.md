@@ -22,7 +22,7 @@ CurriculumDocRE/
 ├── README.md
 ├── requirements.txt
 ├── run.py
-├── train.py (or run-cur.py – I'll unify)
+├── train.py
 ├── config.py
 ├── utils.py
 ├── prepro.py
