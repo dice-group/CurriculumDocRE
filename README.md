@@ -42,9 +42,10 @@ CurriculumDocRE/
 
 1. Download the required datasets:
    - **Re‑DocRED**: [https://github.com/tonytan48/Re-DocRED](https://github.com/tonytan48/Re-DocRED)
-   - **RE2‑DocRED**: [https://github.com/.../RE2-DocRED](https://github.com/klassessg/re2-docred)
-   - **CDR**: [BioCreative V CDR task](https://biocreative.sourceforge.net/resources/cdr.html)
-   - **GDA**: [DFKI-SLT/GDA on Hugging Face](https://huggingface.co/DFKI-SLT/GDA)
+   - **RE2‑DocRED**: [https://github.com/klassessg/re2-docred](https://github.com/klassessg/re2-docred)
+
+ The CDR and GDA datasets can be obtained following the instructions in [edge-oriented graph](https://github.com/fenchri/edge-oriented-graph). 
+  
 
 2. Place the files in the `data/` directory with the following structure:
 
