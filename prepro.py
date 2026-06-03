@@ -190,7 +190,7 @@ def read_docred(file_in=None, tokenizer=None, max_seq_length=1024,
         # Truncate to max_seq_length - 2 for [CLS] and [SEP]
         sents = sents[:max_seq_length - 2]
         input_ids = tokenizer.convert_tokens_to_ids(sents)
-        input_ids = tokenizer.build_inputs_with_special_tokens(input_ids)
+        input_ids = [tokenizer.cls_token_id] + input_ids + [tokenizer.sep_token_id]
         input_ids = torch.tensor(input_ids, dtype=torch.long)
 
         # Create a single feature for this document (document-level)
