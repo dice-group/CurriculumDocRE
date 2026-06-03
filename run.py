@@ -6,9 +6,9 @@ import os
 import json
 import torch
 import numpy as np
+from torch.optim import AdamW
 from torch.utils.data import DataLoader
-from transformers import AutoConfig, AutoTokenizer, AutoModel
-from transformers.optimization import AdamW, get_linear_schedule_with_warmup
+from transformers import AutoConfig, AutoTokenizer, AutoModel, get_linear_schedule_with_warmup
 from torch.cuda.amp import GradScaler
 from tqdm import tqdm
 import wandb
@@ -17,7 +17,7 @@ import wandb
 from prepro import read_docred
 from model import DocREModel
 from utils import set_seed, collate_fn, create_directory
-from evaluation import official_evaluate, to_official
+from evaluation import to_official, official_evaluate
 from losses import ATLoss
 from long_seq import process_long_input
 
@@ -268,8 +268,8 @@ def main():
                 train_features = read_docred(os.path.join(args.data_dir, args.train_file), tokenizer,
                                              max_seq_length=args.max_seq_length, curriculum_stage=1,
                                              stage1_max_dist=1, stage2_max_dist=4)
-                model = DocREModel(config, AutoModel.from_pretrained(args.model_name_or_path, config=config),
-                                   tokenizer, args.num_labels, args.max_sent_num, args.evi_thresh, args.pos_weight)
+                base_model = AutoModel.from_pretrained(args.model_name_or_path, config=config,attn_implementation="eager")
+                model = DocREModel(config, base_model, tokenizer, args.num_labels, args.max_sent_num, args.evi_thresh, args.pos_weight)
                 model.to(args.device)
                 # alpha schedule: from 0 to max_alpha linearly over total epochs (here only phase1 epochs)
                 total_phases_epochs = args.phase1_epochs + args.phase2_epochs + args.phase3_epochs
