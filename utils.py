@@ -23,12 +23,6 @@ def set_seed(seed, n_gpu=1):
 
 
 def collate_fn(batch):
-    """
-    Collate function for DataLoader.
-    Supports both document-level features (multiple pairs per document)
-    and flattened pair-level features (one pair per item).
-    """
-    # Determine max sequence length and max number of sentences
     max_len = max([len(f["input_ids"]) for f in batch])
     max_sent = max([len(f["sent_pos"]) for f in batch]) if "sent_pos" in batch[0] else 0
 
@@ -42,50 +36,36 @@ def collate_fn(batch):
                           torch.zeros(pad_len, dtype=torch.float)])
         input_ids.append(ids)
         attention_mask.append(mask)
-
     input_ids = torch.stack(input_ids)
     attention_mask = torch.stack(attention_mask)
 
-    # Labels: can be stored as 'labels' (document-level) or 'label' (pair-level)
-    if "labels" in batch[0]:
-        labels = [torch.tensor(f["labels"], dtype=torch.float32) for f in batch]
-        labels = torch.cat(labels, dim=0)
-    elif "label" in batch[0]:
-        labels = torch.stack([f["label"] for f in batch])
-    else:
-        labels = None
+    # Labels: concatenate (different number of pairs per doc)
+    labels = [torch.tensor(f["labels"], dtype=torch.float32) for f in batch]
+    labels = torch.cat(labels, dim=0)
 
-    # Entity positions and head-tail pairs
+    # Entity positions and hts remain as lists of lists
     entity_pos = [f["entity_pos"] for f in batch]
     hts = [f["hts"] for f in batch]
-
-    # Sentence positions and labels (evidence)
     sent_pos = [f["sent_pos"] for f in batch] if "sent_pos" in batch[0] else []
+
+    # Evidence labels (sent_labels): pad sentence dimension and concatenate
+    sent_labels_tensor = None
     if "sent_labels" in batch[0]:
-        sent_labels = [torch.tensor(f["sent_labels"], dtype=torch.float32) for f in batch]
-        # Pad sentence dimension to max_sent
-        sent_labels_padded = []
-        for sl in sent_labels:
-            if sl.size(0) < max_sent:
-                pad = torch.zeros(max_sent - sl.size(0), dtype=sl.dtype)
-                sl = torch.cat([sl, pad])
-            sent_labels_padded.append(sl)
-        sent_labels_tensor = torch.stack(sent_labels_padded, dim=0)
-    elif "sent_label" in batch[0]:
-        sent_labels_tensor = torch.stack([f["sent_label"] for f in batch])
-        if sent_labels_tensor.size(1) < max_sent:
-            pad = torch.zeros(sent_labels_tensor.size(0), max_sent - sent_labels_tensor.size(1), dtype=sent_labels_tensor.dtype)
-            sent_labels_tensor = torch.cat([sent_labels_tensor, pad], dim=1)
-    else:
-        sent_labels_tensor = None
+        sent_labels_list = []
+        for f in batch:
+            sl = f["sent_labels"]
+            sl_tensor = sl if isinstance(sl, torch.Tensor) else torch.tensor(sl, dtype=torch.float32)
+            # sl_tensor shape: (num_pairs, num_sentences)
+            if sl_tensor.size(1) < max_sent:
+                pad = torch.zeros(sl_tensor.size(0), max_sent - sl_tensor.size(1), dtype=torch.float32)
+                sl_tensor = torch.cat([sl_tensor, pad], dim=1)
+            sent_labels_list.append(sl_tensor)
+        sent_labels_tensor = torch.cat(sent_labels_list, dim=0)
 
-    # Distances (for curriculum weighting) – list of lists (document-level) or 1D tensor (pair-level)
-    if "distances" in batch[0]:
-        distances = [f["distances"] for f in batch]
-    else:
-        distances = None
+    # Distances: list of lists (keep as is, will be flattened in model)
+    distances = [f["distances"] for f in batch] if "distances" in batch[0] else []
 
-    # Teacher attentions (optional)
+    # Teacher attentions (if present)
     attns = [f["attns"] for f in batch] if "attns" in batch[0] else []
     if attns:
         attns_padded = []
@@ -97,8 +77,9 @@ def collate_fn(batch):
             else:
                 attn_padded = attn
             attns_padded.append(attn_padded)
-        attns_tensor = torch.from_numpy(np.concatenate(attns_padded, axis=0))
+        attns = torch.from_numpy(np.concatenate(attns_padded, axis=0))
     else:
-        attns_tensor = None
+        attns = None
 
-    return (input_ids, attention_mask, labels, entity_pos, hts, sent_pos, sent_labels_tensor, attns_tensor, distances)
+    return (input_ids, attention_mask, labels, entity_pos, hts,
+            sent_pos, sent_labels_tensor, attns, distances)
